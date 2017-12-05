@@ -10,6 +10,15 @@ r_binary_packages:
  - snowfall
  - deldir
  - sp
+ 
+ # Warnings don't fail build
+warnings_are_errors: false
+
+## Email notification if the package pass status changes
+notifications:
+email:
+  on_success: change
+  on_failure: change  
 
 after_success:
  - Rscript -e 'library(covr);codecov()'
