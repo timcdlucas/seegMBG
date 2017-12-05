@@ -1,16 +1,7 @@
+# Continuous integration with travis
 language: r
-dist: trusty
-cache: packages
 sudo: required
 
-##
-# code to get gdal working #
-addons:
-  apt:
-    packages:
-      - libgdal1-dev
-      - libproj-dev
-      
 r_binary_packages:
  - rgdal
  - rgeos
@@ -20,39 +11,18 @@ r_binary_packages:
  - deldir
  - sp
 
-r_github_packages:
- - andrewzm/INLA
- - SEEG-Oxford/seegSDM
-
-# Install the suggested packages which
-# are needed for the vignette builds
-r_packages:
- - testthat
- - covr
-
-## After success update the code coverage and deploy the pkgdown to gh-pages
 after_success:
  - Rscript -e 'library(covr);codecov()'
- 
-# Warnings don't fail build
-warnings_are_errors: false
- 
-## Email notification if the package pass status changes
-notifications:
-email:
-  on_success: change
-  on_failure: change
-  
-## Set up the matrix of different runs
-env:
-  matrix:
-    - r: old_rel
-      not_cran: false
-      r_check_args: "--no-manual --as--cran"
+
+
+matrix:
+  include:
     - r: release
-      not_cran: false
-      r_check_args: "--no-manual --as--cran"
+      r_github_packages: andrewzm/INLA
     - r: devel
-      not_cran: false
-      r_check_args: "--no-manual --as--cran"
-      
+      r_github_packages: andrewzm/INLA
+    - r: devel
+      env: _R_CHECK_FORCE_SUGGESTS_=false
+      install: R -e 'install.packages("devtools", dep = TRUE);devtools::install_deps(dep = c("Depends", "Imports"))'
+
+
